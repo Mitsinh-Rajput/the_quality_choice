@@ -46,7 +46,7 @@ dependencies:
   cached_network_image: ^3.2.3
   #  lottie: ^2.3.2
   #  shimmer: ^2.0.0
-  #  image_picker: ^0.8.5+3
+  image_picker: ^1.1.2
   #  permission_handler: ^10.1.0
   #  dio: ^4.0.6
   #  custom_refresh_indicator: ^2.0.1
@@ -83,6 +83,21 @@ flutter:
     - assets/svgs/
     - assets/
     - assets/audios/
+    - assets/fonts/
+    - assets/images/pngs/
+    - assets/images/Page 1/
+    - assets/images/Page 2/
+    - assets/images/Page 3/
+    - assets/images/Page 4/
+    - assets/images/Page 5/
+    - assets/images/Page 6/
+    - assets/images/Page 7/
+    - assets/images/page 8/
+    - assets/images/Page 9/
+    - assets/images/Page 10/
+    - assets/images/Page 11/
+    - assets/videos/
+    - assets/lotties/
 
 
 flutter_assets:

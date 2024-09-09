@@ -97,13 +97,12 @@ class AuthController extends GetxController implements GetxService {
   List<String> images = [
     Assets.imagesBG,
     Assets.imagesBG,
-    Assets.imagesD9,
-    Assets.imagesD3,
-    Assets.imagesTreebg,
-    Assets.imagesD5,
-    Assets.imagesD6,
-    Assets.imagesD7,
-    Assets.imagesBG,
+    Assets.page4Page412,
+    Assets.page5Page5Jpeg12,
+    Assets.page6Page6Jpeg12,
+    Assets.page8Page8Jpeg12,
+    Assets.page10Page10Jpeg12,
+    Assets.page11Page11Jpeg12,
   ];
 
   Future<bool> connectivity() async {
@@ -142,7 +141,7 @@ class AuthController extends GetxController implements GetxService {
     if (pageController.page! == 0) {
       return true;
     } else if (pageController.page! == 1) {
-      if (oneController.text.isValid && twoController.text.isValid && specialtyController.text.isValid && threeController.text.isValid && fourController.text.isValid) {
+      if (oneController.text.isValid && twoController.text.isValid && threeController.text.isValid && fourController.text.isValid) {
         return true;
       }
       Fluttertoast.showToast(msg: "Please enter all data");
