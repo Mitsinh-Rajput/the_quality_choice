@@ -44,6 +44,11 @@ class AuthController extends GetxController implements GetxService {
     "dr_name": null,
     "city": null,
     "comment": null,
+    "option_1": null,
+    "option_2": null,
+    "option_3": null,
+    "option_4": null,
+    "selfie": null
   };
   TextEditingController oneController = TextEditingController();
   TextEditingController twoController = TextEditingController();
@@ -105,6 +110,8 @@ class AuthController extends GetxController implements GetxService {
     Assets.page11Page11Jpeg12,
   ];
 
+  List<String> answers = ["no", "no", "no", "no"];
+
   Future<bool> connectivity() async {
     try {
       final result = await InternetAddress.lookup('example.com');
@@ -137,6 +144,25 @@ class AuthController extends GetxController implements GetxService {
     }
   }
 
+  backwardButton() async {
+    focusNode.unfocus();
+    if (pageController.page! < images.length && validatePages()) {
+      if (pageController.page! == 4) {
+        pageController.jumpToPage(5);
+        update();
+      } else if (pageController.page! == images.length - 1 && validatePages()) {
+        submitForm();
+        // await pageController.animateToPage(0, duration: const Duration(milliseconds: 50), curve: Curves.ease);
+        // update();
+      } else {
+        await pageController.animateToPage((pageController.page! - 1).round(), duration: const Duration(milliseconds: 50), curve: Curves.ease);
+        update();
+      }
+    }
+  }
+
+  File? imageFile;
+
   bool validatePages() {
     if (pageController.page! == 0) {
       return true;
@@ -145,6 +171,18 @@ class AuthController extends GetxController implements GetxService {
         return true;
       }
       Fluttertoast.showToast(msg: "Please enter all data");
+      return false;
+    } else if (pageController.page! == 4) {
+      if (imageFile != null) {
+        return true;
+      }
+      Fluttertoast.showToast(msg: "Please provide image");
+      return false;
+    } else if (pageController.page! == 5) {
+      if (answers.contains("yes")) {
+        return true;
+      }
+      Fluttertoast.showToast(msg: "Please provide value");
       return false;
     } else if (pageController.page! == images.length - 1) {
       if (comments.text != "") {
@@ -166,6 +204,8 @@ class AuthController extends GetxController implements GetxService {
     threeController.clear();
     fourController.clear();
     comments.clear();
+    answers = ["no", "no", "no", "no"];
+    imageFile = null;
 
     QuestionOneAnswer = "";
     QuestionSecondAnswer.clear();
@@ -181,10 +221,14 @@ class AuthController extends GetxController implements GetxService {
   submitForm() async {
     data['se_name'] = oneController.text;
     data['dr_name'] = twoController.text;
-    data['specialty'] = specialtyController.text;
     data['hq'] = threeController.text;
     data['city'] = fourController.text;
     data['comment'] = comments.text;
+    data['option_1'] = answers[0];
+    data['option_2'] = answers[1];
+    data['option_3'] = answers[2];
+    data['option_4'] = answers[3];
+    data['selfie'] = MultipartFile(imageFile, filename: imageFile!.path.fileName);
 
     if (await connectivity()) {
       //API CALL

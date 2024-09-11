@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../controllers/auth_controller.dart';
 import '../../../services/input_decoration.dart';
@@ -20,6 +23,71 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   bool _showFirstImage = true;
   late AnimationController _controller;
   late Animation<double> _animation;
+
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? pickedFile = await _picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      File tempImage = File(pickedFile.path);
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String appDocPath = appDocDir.path;
+
+      // Save the image to the device's app directory
+      final File localImage = await tempImage.copy('$appDocPath/${pickedFile.name}');
+
+      // setState(() {
+      Get.find<AuthController>().imageFile = localImage;
+      Get.find<AuthController>().update();
+      // });
+    }
+  }
+
+  Future<void> _showPickerDialog() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                  leading: const Icon(
+                    Icons.photo_library,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    'Gallery',
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white),
+                  ),
+                  onTap: () {
+                    _pickImage(ImageSource.gallery);
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.camera_alt,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    'Camera',
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white),
+                  ),
+                  onTap: () {
+                    _pickImage(ImageSource.camera);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -69,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           children: [
             PageView.builder(
               controller: authController.pageController,
-              physics: ((authController.index ?? 0) < 2) ? const NeverScrollableScrollPhysics() : const ScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: authController.images.length,
               onPageChanged: (va) {
                 log("${authController.pageController.page}");
@@ -101,21 +169,244 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
             ),
             if (authController.pageController.hasClients)
               if (authController.pageController.page!.round() == 4)
-                Positioned(
-                    top: 290,
-                    left: 380,
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        height: 230,
-                        width: 320,
-                        color: Colors.red,
+                authController.imageFile == null
+                    ? Center(
+                        child: GestureDetector(
+                          onTap: _showPickerDialog,
+                          child: Container(
+                            color: Colors.transparent,
+                            child: const CustomImage(
+                              path: Assets.imagesCameraBox,
+                              height: 600,
+                              width: 1120,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: GestureDetector(
+                          onTap: _showPickerDialog,
+                          child: Container(
+                            color: Colors.transparent,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  top: 240,
+                                  left: 150,
+                                  child: Container(
+                                    height: 25,
+                                    width: 700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const CustomImage(
+                                  path: Assets.page7IDCard12,
+                                ),
+                                Positioned(
+                                  top: 362,
+                                  left: 488,
+                                  child: Image.file(
+                                    authController.imageFile!,
+                                    height: 100,
+                                    fit: BoxFit.fill,
+                                    width: 97,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 474,
+                                  left: 495,
+                                  child: Text(
+                                    authController.twoController.text,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 490,
+                                  left: 495,
+                                  child: Text(
+                                    authController.threeController.text,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    )),
+
+            if (authController.pageController.hasClients)
+              if (authController.pageController.page!.round() == 5)
+                Stack(
+                  children: [
+                    Positioned(
+                      top: 160,
+                      left: 650,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (authController.answers[0] == "no") {
+                            authController.answers[0] = "yes";
+                          } else {
+                            authController.answers[0] = "no";
+                          }
+                          authController.update();
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          height: 100,
+                          width: 170,
+                          child: authController.answers[0] != "no"
+                              ? const Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 41,
+                                      left: 18,
+                                      child: CustomImage(
+                                        path: Assets.imagesGreenDot,
+                                        height: 30,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 17,
+                                      left: 75,
+                                      child: CustomImage(
+                                        path: Assets.imagesTickmark,
+                                        height: 50,
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 300,
+                      left: 650,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (authController.answers[1] == "no") {
+                            authController.answers[1] = "yes";
+                          } else {
+                            authController.answers[1] = "no";
+                          }
+                          authController.update();
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          height: 100,
+                          width: 170,
+                          child: authController.answers[1] != "no"
+                              ? const Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 45,
+                                      left: 18,
+                                      child: CustomImage(
+                                        path: Assets.imagesGreenDot,
+                                        height: 30,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 24,
+                                      left: 75,
+                                      child: CustomImage(
+                                        path: Assets.imagesTickmark,
+                                        height: 50,
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 420,
+                      left: 650,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (authController.answers[2] == "no") {
+                            authController.answers[2] = "yes";
+                          } else {
+                            authController.answers[2] = "no";
+                          }
+                          authController.update();
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          height: 100,
+                          width: 170,
+                          child: authController.answers[2] != "no"
+                              ? const Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 38,
+                                      left: 18,
+                                      child: CustomImage(
+                                        path: Assets.imagesGreenDot,
+                                        height: 30,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 17,
+                                      left: 75,
+                                      child: CustomImage(
+                                        path: Assets.imagesTickmark,
+                                        height: 50,
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 525,
+                      left: 650,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (authController.answers[3] == "no") {
+                            authController.answers[3] = "yes";
+                          } else {
+                            authController.answers[3] = "no";
+                          }
+                          authController.update();
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          height: 100,
+                          width: 170,
+                          child: authController.answers[3] != "no"
+                              ? const Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 35,
+                                      left: 18,
+                                      child: CustomImage(
+                                        path: Assets.imagesGreenDot,
+                                        height: 30,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 15,
+                                      left: 75,
+                                      child: CustomImage(
+                                        path: Assets.imagesTickmark,
+                                        height: 50,
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
             if (authController.pageController.hasClients)
               if (authController.pageController.page == 0) const HomePage(),
-            // if (authController.pageController.hasClients)
-            //   if (authController.pageController.page?.round() == authController.images.length - 1) const Comments(),
+            if (authController.pageController.hasClients)
+              if (authController.pageController.page?.round() == authController.images.length - 1) const Comments(),
 
             // Sync Button
             if (authController.pageController.hasClients)
@@ -137,8 +428,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                             angle: authController.controller.value * 2 * 3.14159265359,
                             child: const CustomImage(
                               path: Assets.imagesSyncBlue,
-                              height: 60,
-                              width: 60,
+                              height: 80,
+                              width: 80,
                             ),
                           );
                         }),
@@ -147,7 +438,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
             // Forward Button
             if (authController.pageController.hasClients)
-              if (authController.pageController.page!.round() < 2)
+              if (authController.pageController.page!.round() >= 0 && authController.pageController.page!.round() != authController.images.length - 1)
                 Positioned(
                   bottom: 20,
                   right: 45,
@@ -162,18 +453,54 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     ),
                   ),
                 ),
-            // Home Button
+
+            // Back Button
             if (authController.pageController.hasClients)
-              if (authController.pageController.page!.round() > 0)
+              if (authController.pageController.page!.round() >= 1)
                 Positioned(
                   bottom: 20,
                   left: 45,
                   child: GestureDetector(
                     onTap: () async {
+                      authController.backwardButton();
+                    },
+                    child: const CustomImage(
+                      path: Assets.imagesBackwardBlue,
+                      height: 60,
+                      width: 60,
+                    ),
+                  ),
+                ),
+
+            // Home Button
+            if (authController.pageController.hasClients)
+              if (authController.pageController.page!.round() >= 0 && authController.pageController.page!.round() != authController.images.length - 1)
+                Positioned(
+                  top: 20,
+                  right: 45,
+                  child: GestureDetector(
+                    onTap: () async {
                       authController.resetForm();
                     },
                     child: const CustomImage(
-                      path: Assets.imagesB4,
+                      path: Assets.imagesHome,
+                      height: 60,
+                      width: 60,
+                    ),
+                  ),
+                ),
+
+            if (authController.pageController.hasClients)
+              if (authController.pageController.page!.round() == authController.images.length - 1)
+                Positioned(
+                  bottom: 20,
+                  right: 45,
+                  child: GestureDetector(
+                    onTap: () async {
+                      authController.submitForm();
+                    },
+                    child: const CustomImage(
+                      path: Assets.imagesHome,
                       height: 60,
                       width: 60,
                     ),
@@ -880,56 +1207,22 @@ class _CommentsState extends State<Comments> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return GetBuilder<AuthController>(builder: (authController) {
-      return Container(
-          width: size.width,
-          height: size.height,
-          padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage(
-                Assets.imagesBG,
+      return Stack(
+        children: [
+          Positioned(
+            top: 287,
+            left: 175,
+            right: 175,
+            child: SingleChildScrollView(
+              child: TextFormField(
+                controller: authController.comments,
+                maxLines: 11,
+                decoration: CustomDecoration.inputDecoration(borderRadius: 5, borderColor: Colors.black38),
               ),
             ),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: CustomImage(
-                    path: Assets.imagesLogo,
-                    height: 270,
-                    width: 250,
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  controller: authController.comments,
-                  maxLines: 13,
-                  decoration: CustomDecoration.inputDecoration(borderRadius: 20, borderColor: Colors.black38),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: () {
-                      authController.forwardButton();
-                    },
-                    child: const CustomImage(
-                      path: Assets.imagesB3,
-                      height: 100,
-                      width: 150,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ));
+        ],
+      );
     });
   }
 }

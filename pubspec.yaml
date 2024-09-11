@@ -47,13 +47,14 @@ dependencies:
   #  lottie: ^2.3.2
   #  shimmer: ^2.0.0
   image_picker: ^1.1.2
-  #  permission_handler: ^10.1.0
+  permission_handler: ^10.1.0
   #  dio: ^4.0.6
   #  custom_refresh_indicator: ^2.0.1
   flutter_svg: ^2.0.5
   #  flutter_svg_provider: ^1.0.3
   #  flutter_asset_generator: ^1.1.0
   flutter_launcher_icons: ^0.13.1
+  path_provider: ^2.1.4
 
 
 dev_dependencies:

@@ -28,6 +28,10 @@ class Assets {
   static const String imagesDadLogo = 'assets/images/DAD logo.png';
   static const String imagesExclaim = 'assets/images/exclaim.png';
   static const String imagesForwardBlue = 'assets/images/forward_blue.png';
+  static const String imagesBackwardBlue = 'assets/images/backward_blue.png';
+  static const String imagesCameraBox = 'assets/images/Camerabox.png';
+  static const String imagesGreenDot = 'assets/images/Greendot.png';
+  static const String imagesTickmark = 'assets/images/Tickmark.png';
   static const String imagesHome = 'assets/images/HOME.png';
   static const String imagesLogo = 'assets/images/LOGO .png';
   static const String imagesLogo1 = 'assets/images/LOGO 1.png';
