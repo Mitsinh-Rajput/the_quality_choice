@@ -110,4 +110,4 @@ flutter_assets:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/cover_image.png"
+  image_path: "assets/images/thequalitylogo.png"

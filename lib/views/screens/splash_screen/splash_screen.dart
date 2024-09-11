@@ -462,7 +462,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   left: 45,
                   child: GestureDetector(
                     onTap: () async {
-                      authController.backwardButton();
+                      authController.pageController.previousPage(duration: const Duration(milliseconds: 50), curve: Curves.ease);
                     },
                     child: const CustomImage(
                       path: Assets.imagesBackwardBlue,
@@ -497,13 +497,22 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   right: 45,
                   child: GestureDetector(
                     onTap: () async {
-                      authController.submitForm();
+                      authController.controller.forward(from: 0).then((value) async {
+                        authController.forwardButton();
+                      });
                     },
-                    child: const CustomImage(
-                      path: Assets.imagesHome,
-                      height: 60,
-                      width: 60,
-                    ),
+                    child: AnimatedBuilder(
+                        animation: authController.controller,
+                        builder: (context, child) {
+                          return Transform.rotate(
+                            angle: authController.controller.value * 2 * 3.14159265359,
+                            child: const CustomImage(
+                              path: Assets.imagesHome,
+                              height: 80,
+                              width: 80,
+                            ),
+                          );
+                        }),
                   ),
                 ),
           ],
@@ -1207,21 +1216,34 @@ class _CommentsState extends State<Comments> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return GetBuilder<AuthController>(builder: (authController) {
-      return Stack(
-        children: [
-          Positioned(
-            top: 287,
-            left: 175,
-            right: 175,
-            child: SingleChildScrollView(
-              child: TextFormField(
-                controller: authController.comments,
-                maxLines: 11,
-                decoration: CustomDecoration.inputDecoration(borderRadius: 5, borderColor: Colors.black38),
+      return SingleChildScrollView(
+        child: Container(
+          width: size.width,
+          height: size.height,
+          padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: AssetImage(
+                Assets.page11Page11Jpeg12,
               ),
             ),
           ),
-        ],
+          child: Stack(
+            children: [
+              Positioned(
+                top: 237,
+                left: 75,
+                right: 75,
+                child: TextFormField(
+                  controller: authController.comments,
+                  maxLines: 11,
+                  decoration: CustomDecoration.inputDecoration(borderRadius: 5, borderColor: Colors.black38),
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     });
   }

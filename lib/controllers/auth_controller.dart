@@ -16,6 +16,7 @@ import '../data/models/response/response_model.dart';
 import '../data/models/response/user_model.dart';
 import '../data/repositories/auth_repo.dart';
 import '../generated/assets.dart';
+import '../main.dart';
 
 class AuthController extends GetxController implements GetxService {
   final AuthRepo authRepo;
@@ -134,10 +135,13 @@ class AuthController extends GetxController implements GetxService {
         pageController.jumpToPage(5);
         update();
       } else if (pageController.page! == images.length - 1 && validatePages()) {
+        FocusScope.of(navigatorKey.currentContext!).unfocus();
+
         submitForm();
         // await pageController.animateToPage(0, duration: const Duration(milliseconds: 50), curve: Curves.ease);
         // update();
       } else {
+        FocusScope.of(navigatorKey.currentContext!).unfocus();
         await pageController.animateToPage((pageController.page! + 1).round(), duration: const Duration(milliseconds: 50), curve: Curves.ease);
         update();
       }
