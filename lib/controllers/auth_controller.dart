@@ -138,7 +138,7 @@ class AuthController extends GetxController implements GetxService {
         FocusScope.of(navigatorKey.currentContext!).unfocus();
 
         submitForm();
-        // await pageController.animateToPage(0, duration: const Duration(milliseconds: 50), curve: Curves.ease);
+        await pageController.animateToPage(0, duration: const Duration(milliseconds: 50), curve: Curves.ease);
         // update();
       } else {
         FocusScope.of(navigatorKey.currentContext!).unfocus();
